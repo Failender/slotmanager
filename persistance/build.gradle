@@ -1,17 +1,10 @@
 plugins {
 	id 'org.springframework.boot' version '2.2.5.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-	id 'java'
 	id "org.flywaydb.flyway" version "6.3.2"
 }
 
-group = 'de.failender.opt'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '8'
 
-repositories {
-	mavenCentral()
-}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -22,8 +15,17 @@ dependencies {
 
 	compile "org.flywaydb:flyway-core:6.3.1"
 
+
 }
 
 test {
 	useJUnitPlatform()
+}
+
+bootJar {
+	enabled = false
+}
+
+jar {
+	enabled = true
 }

@@ -1,6 +1,5 @@
 package de.failender.opt.slotmanager;
 
-import de.failender.opt.slotmanager.migration.SetupConfiguration;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +27,7 @@ public class FlywayConfig {
     }
 
     @Bean
-    public Flyway flyway(DataSource theDataSource, @Value("${opt.slotmanager.datasource.clean.on.start:false}") boolean cleanOnStart, SetupConfiguration setupConfiguration) {
+    public Flyway flyway(DataSource theDataSource, @Value("${opt.slotmanager.datasource.clean.on.start:false}") boolean cleanOnStart) {
         flyway = Flyway.configure().locations("classpath:db/migration")
                 .javaMigrations(javaMigrations)
                 .dataSource(theDataSource).load();

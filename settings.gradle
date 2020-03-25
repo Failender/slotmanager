@@ -1,5 +1,5 @@
-rootProject.name = 'slotmanager'
+rootProject.name = 'opt-slotmanager'
 
 
-include 'rest'
 include 'persistance'
+include 'rest'

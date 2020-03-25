@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:11.3
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=opt
+
+  backend:
+    image: failender/opt-slotmanager-rest:latest
+    ports:
+      - 8080:8080
+
+    environment:
+      - opt.slotmanager.setup.admin.name=Admin
+      - opt.slotmanager.setup.admin.password=Admin
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/opt?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+
+volumes:
+  db-data: {}
+  rest-cache: {}

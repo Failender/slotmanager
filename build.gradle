@@ -1,17 +1,17 @@
 subprojects {
     apply plugin: 'java'
-    group = 'org.gradle.sample'
-    version = '1.0'
+    group = 'de.failender.opt'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = '8'
+
     repositories {
         mavenCentral()
     }
     dependencies {
         testImplementation "junit:junit:4.12"
     }
-}
 
-project(':rest') {
-    dependencies {
-        implementation project(':persistance')
+    test {
+        useJUnitPlatform()
     }
 }

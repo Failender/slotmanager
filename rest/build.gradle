@@ -1,15 +1,6 @@
 plugins {
 	id 'org.springframework.boot' version '2.2.5.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-	id 'java'
-}
-
-group = 'de.failender.opt'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '8'
-
-repositories {
-	mavenCentral()
 }
 
 dependencies {
@@ -23,11 +14,22 @@ dependencies {
 	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 
-
-	compile project(':persistance')
+	implementation project(':persistance')
 
 }
 
-test {
-	useJUnitPlatform()
+
+
+task fatJar(type: Jar) {
+	manifest {
+		attributes 'Main-Class': 'de.failender.opt.slotmanager.SlotmanagerApplication'
+	}
+	baseName = 'opt-slotmanager'
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+	with jar
+}
+
+bootJar {
+	mainClassName = 'de.failender.opt.slotmanager.SlotmanagerApplication'
+
 }
