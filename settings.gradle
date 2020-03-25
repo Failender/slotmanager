@@ -1,0 +1,5 @@
+rootProject.name = 'slotmanager'
+
+
+include 'rest'
+include 'persistance'
