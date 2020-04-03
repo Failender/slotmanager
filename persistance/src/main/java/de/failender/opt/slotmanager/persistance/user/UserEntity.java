@@ -1,15 +1,14 @@
 package de.failender.opt.slotmanager.persistance.user;
 
+import de.failender.opt.slotmanager.BaseEntity;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "USERS")
-public class UserEntity{
+public class UserEntity extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String name;
     private String password;
     private String discordId;
@@ -56,11 +55,4 @@ public class UserEntity{
         this.createdDate = createdDate;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

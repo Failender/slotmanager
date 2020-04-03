@@ -3,3 +3,5 @@ rootProject.name = 'opt-slotmanager'
 
 include 'persistance'
 include 'rest'
+include 'integration'
+include 'discord'

@@ -1,5 +1,6 @@
 package de.failender.opt.slotmanager;
 
+import de.failender.opt.slotmanager.discord.OptDiscord;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

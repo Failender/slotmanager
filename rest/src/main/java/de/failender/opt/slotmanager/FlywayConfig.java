@@ -20,8 +20,6 @@ public class FlywayConfig {
     private Flyway flyway;
 
 
-
-
     public FlywayConfig(JavaMigration[] javaMigrations) {
         this.javaMigrations = javaMigrations;
     }
