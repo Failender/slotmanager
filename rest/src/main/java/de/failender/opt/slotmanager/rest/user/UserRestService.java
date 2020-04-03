@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserRestService {
 
 
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserRestService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

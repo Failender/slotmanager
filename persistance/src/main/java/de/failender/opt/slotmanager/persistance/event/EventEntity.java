@@ -2,6 +2,7 @@ package de.failender.opt.slotmanager.persistance.event;
 
 
 import de.failender.opt.slotmanager.BaseEntity;
+import org.springframework.data.annotation.CreatedBy;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,6 +12,8 @@ import java.time.LocalDateTime;
 public class EventEntity extends BaseEntity {
 
     private String name;
+
+    @CreatedBy
     private Long createdBy;
     private LocalDateTime date;
 
