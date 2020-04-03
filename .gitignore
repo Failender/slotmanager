@@ -1,5 +1,6 @@
 .gradle
-/out/
+**/out/
+
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
@@ -11,7 +12,6 @@
 .settings
 .springBeans
 .sts4-cache
-rest/src/main/resources/user.json
 scripts/
 
 ### IntelliJ IDEA ###
@@ -28,4 +28,3 @@ scripts/
 
 /nbdist/
 /.nb-gradle/
-processlogger/

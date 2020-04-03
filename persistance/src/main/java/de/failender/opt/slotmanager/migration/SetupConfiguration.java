@@ -8,7 +8,9 @@ import org.springframework.context.annotation.Configuration;
 public class SetupConfiguration {
 
     private String name;
+
     private String password;
+    private String userid;
 
     public String getName() {
         return name;
@@ -24,5 +26,13 @@ public class SetupConfiguration {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
     }
 }

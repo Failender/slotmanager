@@ -3,9 +3,12 @@ package de.failender.opt.slotmanager.discord;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.EmitterProcessor;
 
 import javax.security.auth.login.LoginException;
 
@@ -14,29 +17,33 @@ public class OptDiscord extends ListenerAdapter {
 
 
     private final JDA jda;
-    public OptDiscord(
-            @Value("${opt.slotmanager.discord.token}")String token) {
+    private final Guild guild;
 
+    public final EmitterProcessor<PrivateMessageReceivedEvent> privateMessageReceivedEvent = EmitterProcessor.create();
 
-        JDA jda = null;
+    public OptDiscord(DiscordConfiguration discordConfiguration) {
+
 
         try {
             System.out.println("Connecting to Discord..");
-            jda = new JDABuilder(token)
+            jda = new JDABuilder(discordConfiguration.getToken())
 
                     .addEventListener(this)
                     .build().awaitReady();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (LoginException e) {
-            e.printStackTrace();
-        }
 
-        this.jda = jda;
+            guild = jda.getGuildsByName(discordConfiguration.getGuild(), true).get(0);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
-    public JDA getJda() {
-        return jda;
+    @Override
+    public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+        privateMessageReceivedEvent.onNext(event);
+    }
+
+    public void messageUser(String message, String userId) {
+        jda.getUserById(userId).openPrivateChannel().queue(channel -> channel.sendMessage(message).queue());
     }
 }

@@ -18,4 +18,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findById(Long id);
 
+    List<UserEntity> findByDiscordIdIsNotNull();
+
+    Optional<UserEntity> findByDiscordId(String discordId);
+
 }
