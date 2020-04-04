@@ -1,5 +1,6 @@
 package de.failender.opt.slotmanager.rest.event;
 
+import de.failender.opt.slotmanager.persistance.event.UserToEventEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,7 +35,11 @@ public class EventController {
     @GetMapping(EventAPI.EVENT_MEMBER)
     public List<EventMemberDto> getMembers(@PathVariable Long id) {
         return eventRestService.getMembers(id);
+    }
 
+    @PostMapping(EventAPI.EVENT_STATE)
+    public void updateStatusForEvent(@PathVariable Long id, @PathVariable UserToEventEntity.State state) {
+        eventRestService.updateStatusForEvent(id, state);
     }
 
 

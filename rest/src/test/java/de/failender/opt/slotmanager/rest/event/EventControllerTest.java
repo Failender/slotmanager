@@ -1,8 +1,7 @@
 package de.failender.opt.slotmanager.rest.event;
 
-import de.failender.opt.slotmanager.persistance.event.EventEntity;
-import de.failender.opt.slotmanager.persistance.event.EventRepository;
-import de.failender.opt.slotmanager.persistance.user.UserRepository;
+import de.failender.opt.slotmanager.persistance.event.UserToEventEntity;
+import de.failender.opt.slotmanager.persistance.event.UserToEventRepository;
 import de.failender.opt.slotmanager.rest.SlotmanagerApplicationTests;
 import org.assertj.core.api.Assertions;
 import org.flywaydb.test.annotation.FlywayTest;
@@ -14,8 +13,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.util.UriTemplate;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
@@ -29,6 +30,9 @@ public class EventControllerTest extends SlotmanagerApplicationTests {
 
     @Autowired
     private EventRestService eventRestService;
+
+    @Autowired
+    private UserToEventRepository userToEventRepository;
 
 
     @FlywayTest
@@ -57,7 +61,7 @@ public class EventControllerTest extends SlotmanagerApplicationTests {
         eventDto.setDate(LocalDateTime.now());
         long id = eventRestService.createEvent(eventDto);
 
-        String uri = new UriTemplate(EventAPI.EVENT).expand(Collections.singletonMap("id", id)).toString();
+        URI uri = new UriTemplate(EventAPI.EVENT).expand(Collections.singletonMap("id", id));
         mvc.perform(MockMvcRequestBuilders.get(uri)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -70,7 +74,7 @@ public class EventControllerTest extends SlotmanagerApplicationTests {
     public void testGetEventNotFound() throws Exception {
 
 
-        String uri = new UriTemplate(EventAPI.EVENT).expand(Collections.singletonMap("id", 1)).toString();
+        URI uri = new UriTemplate(EventAPI.EVENT).expand(Collections.singletonMap("id", 1));
         mvc.perform(MockMvcRequestBuilders.get(uri)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -108,6 +112,63 @@ public class EventControllerTest extends SlotmanagerApplicationTests {
 
         Assertions.assertThat(eventRestService.getEvents().size()).isEqualTo(1);
     }
+
+    @FlywayTest
+    @Test
+    public void testAttendEventUnauthorized() throws Exception {
+        authenticationService.authenticate(ADMIN, ADMIN);
+        EventDto eventDto = new EventDto();
+        eventDto.setName("DEMO");
+        eventDto.setDate(LocalDateTime.now());
+        long id = eventRestService.createEvent(eventDto);
+
+
+        URI uri = new UriTemplate(EventAPI.EVENT_STATE).expand( id, UserToEventEntity.State.APPROVED);
+        mvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @FlywayTest
+    @Test
+    public void testAttendEvent() throws Exception {
+        authenticationService.authenticate(ADMIN, ADMIN);
+        EventDto eventDto = new EventDto();
+        eventDto.setName("DEMO");
+        eventDto.setDate(LocalDateTime.now());
+        long id = eventRestService.createEvent(eventDto);
+
+
+        URI uri = new UriTemplate(EventAPI.EVENT_STATE).expand( id, UserToEventEntity.State.APPROVED);
+        mvc.perform(MockMvcRequestBuilders.post(uri)
+                .headers(adminHeaders())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        List<UserToEventEntity> states = userToEventRepository.findByEventId(id);
+        Assertions.assertThat(states.size()).isEqualTo(1);
+        Assertions.assertThat(states.get(0).getState()).isEqualTo(UserToEventEntity.State.APPROVED);
+        Assertions.assertThat(states.get(0).getUserId()).isEqualTo(1);
+
+
+    }
+
+    @FlywayTest
+    @Test
+    public void testAttendEventNotFound() throws Exception {
+
+        URI uri = new UriTemplate(EventAPI.EVENT_STATE).expand( 0, UserToEventEntity.State.APPROVED);
+        mvc.perform(MockMvcRequestBuilders.post(uri)
+                .headers(adminHeaders())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+
+
+    }
+
+
 
 
 

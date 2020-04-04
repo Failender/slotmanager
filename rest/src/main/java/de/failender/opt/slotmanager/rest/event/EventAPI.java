@@ -5,4 +5,5 @@ public interface EventAPI {
     String EVENTS = "/api/events";
     String EVENT = "/api/events/{id}";
     String EVENT_MEMBER = "/api/events/{id}/member";
+    String EVENT_STATE = "/api/events/{id}/status/{state}";
 }

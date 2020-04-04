@@ -1,18 +1,16 @@
 package de.failender.opt.slotmanager.rest.event;
 
+import de.failender.opt.slotmanager.integration.EventService;
 import de.failender.opt.slotmanager.persistance.event.EventEntity;
 import de.failender.opt.slotmanager.persistance.event.EventRepository;
 import de.failender.opt.slotmanager.persistance.event.UserToEventEntity;
 import de.failender.opt.slotmanager.persistance.event.UserToEventRepository;
 import de.failender.opt.slotmanager.persistance.user.UserEntity;
 import de.failender.opt.slotmanager.persistance.user.UserRepository;
+import de.failender.opt.slotmanager.rest.SecurityAuditorAware;
 import de.failender.opt.slotmanager.rest.exceptions.NotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Map;
@@ -24,11 +22,14 @@ public class EventRestService {
     private final EventRepository eventRepository;
     private final UserToEventRepository userToEventRepository;
     private final UserRepository userRepository;
+    private final EventService eventService;
 
-    public EventRestService(EventRepository eventRepository, UserToEventRepository userToEventRepository, UserRepository userRepository) {
+
+    public EventRestService(EventRepository eventRepository, UserToEventRepository userToEventRepository, UserRepository userRepository, EventService eventService) {
         this.eventRepository = eventRepository;
         this.userToEventRepository = userToEventRepository;
         this.userRepository = userRepository;
+        this.eventService = eventService;
     }
 
     public List<EventDto> getEvents() {
@@ -67,6 +68,14 @@ public class EventRestService {
             dto.setState(entry.getState());
             return dto;
         }).collect(Collectors.toList());
+
+    }
+
+    public void updateStatusForEvent(Long id, UserToEventEntity.State state) {
+
+        EventEntity eventEntity = eventRepository.findById(id).orElseThrow(() -> new NotFoundException());
+        eventService.registerUserForEvent(SecurityAuditorAware.getCurrentUser(), eventEntity, state);
+
 
     }
 }
