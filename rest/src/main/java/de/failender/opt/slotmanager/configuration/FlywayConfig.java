@@ -1,16 +1,14 @@
-package de.failender.opt.slotmanager;
+package de.failender.opt.slotmanager.configuration;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
 import javax.sql.DataSource;
-import java.util.List;
 
 @Configuration
 public class FlywayConfig {

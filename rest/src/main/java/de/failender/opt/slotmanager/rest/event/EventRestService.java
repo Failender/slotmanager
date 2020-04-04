@@ -7,6 +7,7 @@ import de.failender.opt.slotmanager.persistance.event.UserToEventRepository;
 import de.failender.opt.slotmanager.persistance.user.UserEntity;
 import de.failender.opt.slotmanager.persistance.user.UserRepository;
 import de.failender.opt.slotmanager.rest.exceptions.NotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +45,7 @@ public class EventRestService {
                 .orElseThrow(() -> new NotFoundException());
     }
 
+    @PreAuthorize("hasAuthority('CREATE_EVENT')")
     public Long createEvent(EventDto eventDto) {
         EventEntity eventEntity = new EventEntity();
         eventEntity.setName(eventDto.getName());

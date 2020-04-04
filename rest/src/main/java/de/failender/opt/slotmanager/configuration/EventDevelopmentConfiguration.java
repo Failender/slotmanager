@@ -1,4 +1,4 @@
-package de.failender.opt.slotmanager;
+package de.failender.opt.slotmanager.configuration;
 
 import de.failender.opt.slotmanager.integration.DiscordService;
 import de.failender.opt.slotmanager.migration.SetupConfiguration;

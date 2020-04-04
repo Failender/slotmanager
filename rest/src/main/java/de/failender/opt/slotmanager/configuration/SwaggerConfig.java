@@ -1,4 +1,4 @@
-package de.failender.opt.slotmanager;
+package de.failender.opt.slotmanager.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

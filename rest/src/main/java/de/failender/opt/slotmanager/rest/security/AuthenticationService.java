@@ -18,21 +18,27 @@ public class AuthenticationService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public void authenticate(String authorization) {
-		if (authorization == null) {
-
-			return;
-		}
-		String[] splits = authorization.split(";");
-		String username = splits[0];
-		String password = splits[1];
-		UserEntity user = this.userRepository.findByName(username);
+	public void authenticate(String name, String password) {
+		UserEntity user = this.userRepository.findByName(name);
 		if (user == null || user.getPassword() != null && !user.getPassword().equals(password)) {
 			return;
 		}
 		SecurityContextHolder.getContext().setAuthentication(
 				new UsernamePasswordAuthenticationToken(user, null, loadUserRights(user.getId()))
 		);
+	}
+
+	public void authenticate(String authorization) {
+		if (authorization == null) {
+
+			return;
+		}
+		String[] splits = authorization.split(";");
+
+		String username = splits[0];
+		String password = splits[1];
+		authenticate(username, password);
+
 	}
 
 
