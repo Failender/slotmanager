@@ -20,7 +20,9 @@ services:
     environment:
       - opt.slotmanager.setup.admin.name=Admin
       - opt.slotmanager.setup.admin.password=Admin
+      - opt.slotmanager.setup.admin.userid=<discordid>
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/opt?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+      - spring.profiles.active=dev
 
 volumes:
   db-data: {}
