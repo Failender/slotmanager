@@ -46,4 +46,8 @@ public class OptDiscord extends ListenerAdapter {
     public void messageUser(String message, String userId) {
         jda.getUserById(userId).openPrivateChannel().queue(channel -> channel.sendMessage(message).queue());
     }
+
+    public JDA getJda() {
+        return jda;
+    }
 }

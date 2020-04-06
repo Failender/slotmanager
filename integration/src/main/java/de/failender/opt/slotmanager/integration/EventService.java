@@ -5,6 +5,7 @@ import de.failender.opt.slotmanager.persistance.event.UserToEventEntity;
 import de.failender.opt.slotmanager.persistance.event.UserToEventRepository;
 import de.failender.opt.slotmanager.persistance.user.UserEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EventService {
@@ -16,6 +17,7 @@ public class EventService {
         this.userToEventRepository = userToEventRepository;
     }
 
+    @Transactional
     public void registerUserForEvent(UserEntity userEntity, EventEntity eventEntity, UserToEventEntity.State state) {
 
         //Delete already existing status if it exists

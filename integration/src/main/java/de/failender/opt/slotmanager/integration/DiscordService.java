@@ -9,7 +9,9 @@ import de.failender.opt.slotmanager.persistance.user.UserEntity;
 import de.failender.opt.slotmanager.persistance.user.UserRepository;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +26,12 @@ public class DiscordService {
     private final EventService eventService;
 
 
-    public DiscordService(OptDiscord discord, UserRepository userRepository, EventRepository eventRepository, UserToEventRepository userToEventRepository, EventService eventService) {
+    public DiscordService(OptDiscord discord, UserRepository userRepository, EventRepository eventRepository, UserToEventRepository userToEventRepository, EventService eventService, EntityManager entityManager) {
         this.discord = discord;
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.userToEventRepository = userToEventRepository;
         this.eventService = eventService;
-
         discord.privateMessageReceivedEvent.subscribe(event -> {
             handlePrivateMessage(event);
 
@@ -64,7 +65,9 @@ public class DiscordService {
     }
 
     private void messageUserAboutPendingEvent(UserEntity userEntity, EventEntity eventEntity) {
-        discord.messageUser("Du hast dich bisher noch nicht für das Event \"" + eventEntity.getName() + "\" eingetragen" + " bitte nutze den Befehl \"!attendEvent|!declineEvent|!maybeEvent " + eventEntity.getName() + "\" um an dem Event teilzunehmen", userEntity.getDiscordId());
+        userEntity.setLatestEvent(eventEntity.getId());
+        userRepository.save(userEntity);
+        discord.messageUser("Du hast dich bisher noch nicht für das Event \"" + eventEntity.getName() + "\" eingetragen" + " bitte nutze den Befehl \"!attend|!decline|!maybe " + eventEntity.getName() + "\" um an dem Event teilzunehmen", userEntity.getDiscordId());
     }
 
     private void handlePrivateMessage(PrivateMessageReceivedEvent event) {
@@ -79,6 +82,7 @@ public class DiscordService {
         }
         if(message.startsWith("!register")) {
             discord.messageUser("Registrierung ist noch nicht implementiert", event.getAuthor().getId());
+            return;
         }
 
         String discordId = event.getAuthor().getId();
@@ -88,45 +92,43 @@ public class DiscordService {
             return;
         }
         UserEntity userEntity = userEntityOptional.get();
-        if(message.startsWith("!attendEvent")) {
-            String eventName = message.substring("!attendEvent ".length());
-            Optional<EventEntity> eventEntityOptional = eventRepository.findByName(eventName);
-            if(!eventEntityOptional.isPresent()) {
-                discord.messageUser("Das Event " + eventName + " konnte nicht gefunden werden", discordId);
-                return;
-            }
-            eventService.registerUserForEvent(userEntity, eventEntityOptional.get(), UserToEventEntity.State.APPROVED);
-            discord.messageUser("Du nimmst jetzt an dem Event Teil", discordId);
+        if(message.startsWith("!attend")) {
+            changeEventStatus(message.substring("!attend".length()), UserToEventEntity.State.APPROVED, userEntity, discordId, "Du nimmst an dem Event Teil");
             return;
         }
 
-        if(message.startsWith("!declineEvent")) {
-            String eventName = message.substring("!declineEvent ".length());
-            Optional<EventEntity> eventEntityOptional = eventRepository.findByName(eventName);
-            if(!eventEntityOptional.isPresent()) {
-                discord.messageUser("Das Event " + eventName + " konnte nicht gefunden werden", discordId);
-                return;
-            }
-            eventService.registerUserForEvent(userEntity, eventEntityOptional.get(), UserToEventEntity.State.DECLINED);
-            discord.messageUser("Du nimmst nicht an dem Event Teil", discordId);
+        if(message.startsWith("!decline")) {
+            changeEventStatus(message.substring("!decline".length()), UserToEventEntity.State.DECLINED, userEntity, discordId, "Du nimmst nicht an dem Event Teil");
             return;
         }
 
-        if(message.startsWith("!maybeEvent")) {
-            String eventName = message.substring("!maybeEvent ".length());
-            Optional<EventEntity> eventEntityOptional = eventRepository.findByName(eventName);
-            if(!eventEntityOptional.isPresent()) {
-                discord.messageUser("Das Event " + eventName + " konnte nicht gefunden werden", discordId);
-                return;
-            }
-            eventService.registerUserForEvent(userEntity, eventEntityOptional.get(), UserToEventEntity.State.MAYBE);
-            discord.messageUser("Du nimmst vielleicht an dem Event Teil", discordId);
+        if(message.startsWith("!maybe")) {
+            changeEventStatus(message.substring("!maybe".length()), UserToEventEntity.State.MAYBE, userEntity, discordId, "Du nimmst vielleicht an dem Event Teil");
             return;
         }
 
         discord.messageUser("Der Befehl konnte nicht erkannt werden", discordId);
 
+    }
 
+    private void changeEventStatus(String eventName, UserToEventEntity.State state, UserEntity userEntity, String discordId, String finalizeMessage) {
+        EventEntity eventEntity = null;
+        if(eventName.trim().isEmpty()) {
+            if(userEntity.getLatestEvent() != null) {
+                eventEntity = eventRepository.findById(userEntity.getLatestEvent()).orElse(null);
+            }
+        } else {
+            Optional<EventEntity> eventEntityOptional = eventRepository.findByName(eventName);
+            if(!eventEntityOptional.isPresent()) {
+                discord.messageUser("Das Event " + eventName + " konnte nicht gefunden werden", discordId);
+                return;
+            }
+            eventEntity = eventEntityOptional.get();
+        }
+
+        eventService.registerUserForEvent(userEntity, eventEntity, state);
+
+        discord.messageUser(finalizeMessage, discordId);
 
 
     }

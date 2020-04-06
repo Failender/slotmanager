@@ -14,6 +14,8 @@ public class UserEntity extends BaseEntity {
     private String discordId;
     private String teamspeakId;
     private LocalDateTime createdDate;
+    //The latest event this user was informed about
+    private Long latestEvent;
 
     public String getName() {
         return name;
@@ -55,4 +57,11 @@ public class UserEntity extends BaseEntity {
         this.createdDate = createdDate;
     }
 
+    public Long getLatestEvent() {
+        return latestEvent;
+    }
+
+    public void setLatestEvent(Long latestEvent) {
+        this.latestEvent = latestEvent;
+    }
 }
