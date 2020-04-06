@@ -67,7 +67,12 @@ public class DiscordService {
     private void messageUserAboutPendingEvent(UserEntity userEntity, EventEntity eventEntity) {
         userEntity.setLatestEvent(eventEntity.getId());
         userRepository.save(userEntity);
-        discord.messageUser("Du hast dich bisher noch nicht für das Event \"" + eventEntity.getName() + "\" eingetragen" + " bitte nutze den Befehl \"!attend|!decline|!maybe " + eventEntity.getName() + "\" um an dem Event teilzunehmen", userEntity.getDiscordId());
+        discord.messageUser("Du hast dich bisher noch nicht für das Event \"" + eventEntity.getName() + "\" eingetragen" + " bitte nutze den Befehl \"!attend|!decline|!maybe " + eventEntity.getName() + "\" um an dem Event teilzunehmen", userEntity.getDiscordId(), message -> {
+            message.addReaction("✅").queue();
+            message.addReaction("❎").queue();
+            message.addReaction("❓").queue();
+
+        });
     }
 
     private void handlePrivateMessage(PrivateMessageReceivedEvent event) {
