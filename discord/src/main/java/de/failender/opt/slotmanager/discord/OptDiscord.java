@@ -54,6 +54,7 @@ public class OptDiscord extends ListenerAdapter {
 
     public void messageUser(String message, String userId, Consumer<Message> messageConsumer) {
         jda.getUserById(userId).openPrivateChannel().queue(channel -> channel.sendMessage(message).queue(re -> {
+
             if(messageConsumer != null) {
                 messageConsumer.accept(re);
             }

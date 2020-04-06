@@ -7,6 +7,7 @@ import de.failender.opt.slotmanager.persistance.event.UserToEventEntity;
 import de.failender.opt.slotmanager.persistance.event.UserToEventRepository;
 import de.failender.opt.slotmanager.persistance.user.UserEntity;
 import de.failender.opt.slotmanager.persistance.user.UserRepository;
+import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,9 +69,10 @@ public class DiscordService {
         userEntity.setLatestEvent(eventEntity.getId());
         userRepository.save(userEntity);
         discord.messageUser("Du hast dich bisher noch nicht für das Event \"" + eventEntity.getName() + "\" eingetragen" + " bitte nutze den Befehl \"!attend|!decline|!maybe " + eventEntity.getName() + "\" um an dem Event teilzunehmen", userEntity.getDiscordId(), message -> {
+
             message.addReaction("✅").queue();
-            message.addReaction("❎").queue();
-            message.addReaction("❓").queue();
+            message.addReaction("❌").queue();
+            message.addReaction("❔").queue();
 
         });
     }
