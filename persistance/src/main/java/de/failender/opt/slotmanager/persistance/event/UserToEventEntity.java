@@ -2,6 +2,7 @@ package de.failender.opt.slotmanager.persistance.event;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name = "USER_TO_EVENT")
@@ -58,6 +59,20 @@ public class UserToEventEntity {
 
         public void setUserId(Long userId) {
             this.userId = userId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            UserToEventId that = (UserToEventId) o;
+            return Objects.equals(eventId, that.eventId) &&
+                    Objects.equals(userId, that.userId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(eventId, userId);
         }
     }
 
