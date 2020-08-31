@@ -22,6 +22,7 @@ services:
       - opt.slotmanager.setup.admin.password=Admin
       - opt.slotmanager.setup.admin.userid=<discordid>
       - opt.slotmanager.steam.api.key=<steamwebapikey>
+      - opt.slotmanager.steam.redirect.uri=<the url to redirect to after auth>
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/opt?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
       - spring.profiles.active=dev
 
