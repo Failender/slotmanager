@@ -18,7 +18,7 @@ public class SteamController {
     private final SteamRestService steamRestService;
     private final String redirectUri;
 
-    public SteamController(SteamOpenIDService steamOpenIDService, SteamRestService steamRestService, @Value("${opt.slotmanager.steam.redirect.uri:'http://localhost:8080/index.html'}") String redirectUri) {
+    public SteamController(SteamOpenIDService steamOpenIDService, SteamRestService steamRestService, @Value("${opt.slotmanager.steam.redirect.uri:http://localhost:8080/index.html}") String redirectUri) {
         this.steamOpenIDService = steamOpenIDService;
         this.steamRestService = steamRestService;
         this.redirectUri = redirectUri;
