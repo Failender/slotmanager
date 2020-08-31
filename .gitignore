@@ -28,3 +28,4 @@ scripts/
 
 /nbdist/
 /.nb-gradle/
+docker-compose.yaml

@@ -3,17 +3,17 @@ package de.failender.opt.slotmanager.discord;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageReaction;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.EmitterProcessor;
 
-import javax.security.auth.login.LoginException;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -22,21 +22,33 @@ public class OptDiscord extends ListenerAdapter {
 
 
     private final JDA jda;
-    private final Guild guild;
+    private Guild guild;
+
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OptDiscord.class);
 
     public final EmitterProcessor<PrivateMessageReceivedEvent> privateMessageReceivedEvent = EmitterProcessor.create();
 
     public OptDiscord(DiscordConfiguration discordConfiguration) {
 
 
+        if (discordConfiguration.getToken() == null) {
+            LOGGER.error("No discord token configured, use opt.slotmanager.discord.token");
+            jda = null;
+            guild = null;
+            return;
+        }
         try {
             System.out.println("Connecting to Discord..");
             jda = new JDABuilder(discordConfiguration.getToken())
-
                     .addEventListener(this)
-                    .build().awaitReady();
+                    .build();
+            jda.awaitReady();
+            Guild guild = jda.getGuildsByName(discordConfiguration.getGuild(), true).get(0);
+            List<Member> members = guild.getMembers();
+            System.out.println(members);
 
-            guild = jda.getGuildsByName(discordConfiguration.getGuild(), true).get(0);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -45,17 +57,23 @@ public class OptDiscord extends ListenerAdapter {
 
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+
         privateMessageReceivedEvent.onNext(event);
     }
 
-    public void messageUser(String message, String userId) {
-        messageUser(message, userId, null);
+    public void messageUser(String message, String userTag) {
+        messageUser(message, userTag, null);
     }
 
     public void messageUser(String message, String userId, Consumer<Message> messageConsumer) {
-        jda.getUserById(userId).openPrivateChannel().queue(channel -> channel.sendMessage(message).queue(re -> {
+        User user = jda.getUserById(userId);
+        if (user == null) {
+            LOGGER.error("Cant find user with id {} wont send message {}", user, message);
+            return;
+        }
+        user.openPrivateChannel().queue(channel -> channel.sendMessage(message).queue(re -> {
 
-            if(messageConsumer != null) {
+            if (messageConsumer != null) {
                 messageConsumer.accept(re);
             }
 

@@ -1,9 +1,18 @@
+plugins {
+    id "io.spring.dependency-management" version "1.0.8.RELEASE"
+    id 'org.springframework.boot' version '2.3.3.RELEASE'
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
     group = 'de.failender.opt'
     version = '0.0.1-SNAPSHOT'
     sourceCompatibility = '8'
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
+    javadoc.options.encoding = 'UTF-8'
 
     repositories {
         mavenCentral()
@@ -15,5 +24,11 @@ subprojects {
 
     test {
         useJUnitPlatform()
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:2.1.7.RELEASE")
+        }
     }
 }

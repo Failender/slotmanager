@@ -2,7 +2,8 @@ package de.failender.opt.slotmanager.persistance.user;
 
 import de.failender.opt.slotmanager.BaseEntity;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity

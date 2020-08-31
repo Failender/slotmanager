@@ -34,12 +34,15 @@ public class EventDevelopmentConfiguration implements ApplicationListener<Contex
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        EventEntity eventEntity = new EventEntity();
-        eventEntity.setName("Test-Event");
-        eventEntity.setCreatedDate(LocalDateTime.now());
-        eventEntity.setCreatedBy(userRepository.findByName(setupConfiguration.getName()).getId());
-        eventEntity.setDate(LocalDateTime.now().plusDays(2));
-        eventRepository.save(eventEntity);
+        if (!eventRepository.findByName("Test-Event").isPresent()) {
+            EventEntity eventEntity = new EventEntity();
+            eventEntity.setName("Test-Event");
+            eventEntity.setCreatedDate(LocalDateTime.now());
+            eventEntity.setCreatedBy(userRepository.findByName(setupConfiguration.getName()).getId());
+            eventEntity.setDate(LocalDateTime.now().plusDays(2));
+            eventRepository.save(eventEntity);
+        }
+
 
         discordService.messageAllUser();
     }

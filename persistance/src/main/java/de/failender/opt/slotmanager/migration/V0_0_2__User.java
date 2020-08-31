@@ -29,7 +29,7 @@ public class V0_0_2__User extends BaseJavaMigration {
         userEntity.setCreatedDate(LocalDateTime.now());
         userEntity.setName(setupConfiguration.getName());
         userEntity.setPassword(setupConfiguration.getPassword());
-        userEntity.setDiscordId(setupConfiguration.getUserid());
+        userEntity.setDiscordId(setupConfiguration.getDiscordId());
         userRepository.save(userEntity);
     }
 

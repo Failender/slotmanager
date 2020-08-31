@@ -10,7 +10,7 @@ public class SetupConfiguration {
     private String name;
 
     private String password;
-    private String userid;
+    private String discordId;
 
     public String getName() {
         return name;
@@ -28,11 +28,11 @@ public class SetupConfiguration {
         this.password = password;
     }
 
-    public String getUserid() {
-        return userid;
+    public String getDiscordId() {
+        return discordId;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setDiscordId(String discordId) {
+        this.discordId = discordId;
     }
 }

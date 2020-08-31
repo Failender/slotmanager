@@ -7,10 +7,8 @@ import de.failender.opt.slotmanager.persistance.event.UserToEventEntity;
 import de.failender.opt.slotmanager.persistance.event.UserToEventRepository;
 import de.failender.opt.slotmanager.persistance.user.UserEntity;
 import de.failender.opt.slotmanager.persistance.user.UserRepository;
-import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -49,10 +47,9 @@ public class DiscordService {
         }
 
 
-
     }
 
-    private void processEvent(EventEntity eventEntity, List<UserEntity> users ) {
+    private void processEvent(EventEntity eventEntity, List<UserEntity> users) {
         List<UserToEventEntity> userToEvents = userToEventRepository.findByEventId(eventEntity.getId());
         users
                 .stream()
@@ -80,36 +77,36 @@ public class DiscordService {
     private void handlePrivateMessage(PrivateMessageReceivedEvent event) {
         String message = event.getMessage().getContentRaw();
 
-        if(event.getAuthor().isBot()) {
+        if (event.getAuthor().isBot()) {
             return;
         }
-        if(!message.startsWith("!")) {
+        if (!message.startsWith("!")) {
             discord.messageUser("Befehl wurde nicht erkannt", event.getAuthor().getId());
             return;
         }
-        if(message.startsWith("!register")) {
+        if (message.startsWith("!register")) {
             discord.messageUser("Registrierung ist noch nicht implementiert", event.getAuthor().getId());
             return;
         }
 
         String discordId = event.getAuthor().getId();
-        Optional <UserEntity> userEntityOptional = userRepository.findByDiscordId(discordId);
-        if(!userEntityOptional.isPresent()) {
+        Optional<UserEntity> userEntityOptional = userRepository.findByDiscordId(discordId);
+        if (!userEntityOptional.isPresent()) {
             discord.messageUser("Du bist bisher noch nicht registriert", discordId);
             return;
         }
         UserEntity userEntity = userEntityOptional.get();
-        if(message.startsWith("!attend")) {
+        if (message.startsWith("!attend")) {
             changeEventStatus(message.substring("!attend".length()), UserToEventEntity.State.APPROVED, userEntity, discordId, "Du nimmst an dem Event Teil");
             return;
         }
 
-        if(message.startsWith("!decline")) {
+        if (message.startsWith("!decline")) {
             changeEventStatus(message.substring("!decline".length()), UserToEventEntity.State.DECLINED, userEntity, discordId, "Du nimmst nicht an dem Event Teil");
             return;
         }
 
-        if(message.startsWith("!maybe")) {
+        if (message.startsWith("!maybe")) {
             changeEventStatus(message.substring("!maybe".length()), UserToEventEntity.State.MAYBE, userEntity, discordId, "Du nimmst vielleicht an dem Event Teil");
             return;
         }
@@ -120,13 +117,13 @@ public class DiscordService {
 
     private void changeEventStatus(String eventName, UserToEventEntity.State state, UserEntity userEntity, String discordId, String finalizeMessage) {
         EventEntity eventEntity = null;
-        if(eventName.trim().isEmpty()) {
-            if(userEntity.getLatestEvent() != null) {
+        if (eventName.trim().isEmpty()) {
+            if (userEntity.getLatestEvent() != null) {
                 eventEntity = eventRepository.findById(userEntity.getLatestEvent()).orElse(null);
             }
         } else {
             Optional<EventEntity> eventEntityOptional = eventRepository.findByName(eventName);
-            if(!eventEntityOptional.isPresent()) {
+            if (!eventEntityOptional.isPresent()) {
                 discord.messageUser("Das Event " + eventName + " konnte nicht gefunden werden", discordId);
                 return;
             }

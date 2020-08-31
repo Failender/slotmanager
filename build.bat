@@ -1,1 +1,1 @@
-./gradlew rest:build
+./gradlew build

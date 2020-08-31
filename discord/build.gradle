@@ -1,37 +1,10 @@
-plugins {
-    id 'java'
-    id 'org.springframework.boot' version '2.2.5.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-}
-
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-repositories{
-    mavenCentral()
-}
-
 dependencies {
-    compile 'net.dv8tion:JDA:3.8.3_463'
-    compile group: 'io.projectreactor', name: 'reactor-core', version: '3.2.1.RELEASE'
-    compile group: 'org.springframework', name: 'spring-beans'
-    compile group: 'org.springframework', name: 'spring-context'
-    compile group: 'org.springframework.boot', name: 'spring-boot'
+    api 'net.dv8tion:JDA:3.8.3_463'
+    api group: 'io.projectreactor', name: 'reactor-core', version: '3.2.1.RELEASE'
+    api group: 'org.springframework', name: 'spring-beans'
+    api group: 'org.springframework', name: 'spring-context'
+    api group: 'org.springframework.boot', name: 'spring-boot'
 
 
 }
 
-
-bootJar {
-    enabled = false
-}
-
-jar {
-    enabled = true
-}

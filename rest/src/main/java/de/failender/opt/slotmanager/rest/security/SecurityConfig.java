@@ -11,43 +11,43 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	public static final String LOGIN_URL = "/api/login";
+    public static final String LOGIN_URL = "/api/login";
 
-	@Autowired
-	private AuthenticationService authenticationService;
+    @Autowired
+    private AuthenticationService authenticationService;
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.
-				csrf().disable().
-				authorizeRequests()
-				.anyRequest().permitAll()
-				.and()
-				.addFilterBefore(new AuthorizationFilter(authenticationManager(), authenticationService), UsernamePasswordAuthenticationFilter.class)
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-	}
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.
+                csrf().disable().
+                cors().and()
+                .authorizeRequests()
+                .anyRequest().permitAll()
+                .and()
+                .addFilterBefore(new AuthorizationFilter(authenticationManager(), authenticationService), UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
 
-	@Bean
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-		return source;
-	}
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        return source;
+    }
 
-	@Bean
-	public WebMvcConfigurerAdapter corsConfigurer() {
-		return new WebMvcConfigurerAdapter() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
-			}
-		};
-	}
+//    @Bean
+//    public WebMvcConfigurerAdapter corsConfigurer() {
+//        return new WebMvcConfigurerAdapter() {
+//            @Override
+//            public void addCorsMappings(CorsRegistry registry) {
+//                registry.addMapping("/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
+//            }
+//        };
+//    }
+
 }

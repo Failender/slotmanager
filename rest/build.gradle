@@ -1,39 +1,44 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.5.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id "org.springframework.boot"
 }
+
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
+    api 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
 
-	testCompile group: 'org.flywaydb.flyway-test-extensions', name: 'flyway-spring-test', version:'5.1.0'
-	testImplementation('org.testcontainers:postgresql:1.13.0')
-	testCompile "org.testcontainers:testcontainers:1.13.0"
+    testCompile group: 'org.flywaydb.flyway-test-extensions', name: 'flyway-spring-test', version: '6.3.3'
+    testImplementation('org.testcontainers:postgresql:1.13.0')
+    testCompile "org.testcontainers:testcontainers:1.13.0"
 
-	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
-	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+    //Force usage of springfox-swagger2 3.0.0
+    compile(group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0') {
+        exclude group: 'io.springfox', module: 'springfox-swagger2'
+    }
+    compile (group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0') {
+        force=true
+    }
 
-	api project(':integration')
-	api project(':persistance')
+    compile project(':integration')
+    compile project(':persistance')
+    api 'org.springframework.boot:spring-boot-starter'
+    api "org.flywaydb:flyway-core:6.3.1"
 }
-
 
 
 task fatJar(type: Jar) {
-	manifest {
-		attributes 'Main-Class': 'de.failender.opt.slotmanager.SlotmanagerApplication'
-	}
-	baseName = 'opt-slotmanager'
-	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-	with jar
+    manifest {
+        attributes 'Main-Class': 'de.failender.opt.slotmanager.SlotmanagerApplication'
+    }
+    baseName = 'opt-slotmanager'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
 
 bootJar {
-	mainClassName = 'de.failender.opt.slotmanager.SlotmanagerApplication'
+    mainClassName = 'de.failender.opt.slotmanager.SlotmanagerApplication'
 
 }

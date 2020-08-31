@@ -37,10 +37,10 @@ public class UserRestService {
     @PreAuthorize("hasAuthority('CREATE_USER')")
     public void updateUser(Long user, UserDto userDto) {
         UserEntity userEntity = userRepository.findById(user).orElseThrow(() -> new EntityNotFoundException());
-        if(userDto.getDiscordId() != null) {
+        if (userDto.getDiscordId() != null) {
             userEntity.setDiscordId(userDto.getDiscordId());
         }
-        if(userDto.getTeamspeakId() != null) {
+        if (userDto.getTeamspeakId() != null) {
             userEntity.setTeamspeakId(userDto.getTeamspeakId());
         }
     }
